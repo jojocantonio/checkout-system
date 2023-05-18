@@ -1,27 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Items from "./Items";
 import { cartItems } from "../api/cartItems";
 
 const Home = () => {
   const [checkoutItemsArr, setcheckoutItemsArr] = useState<string[]>([]);
-  const [itemsCountArr, setItemsCountArr] = useState([]);
   const [isOnPromo, setIsOnPromo] = useState(true);
   const [codeInput, setCodeInput] = useState("");
   const [inputOption, setInputOption] = useState("Manual");
  
-
-  useEffect(() => {
-    console.log("checkoutItemsArr: ", checkoutItemsArr);
-  });
-
   const handleBarcodeScanned = (event: any) => {
     event.preventDefault();
 
-    console.log("barcode input: ", event.target.value);
-
     if (event !== null) {
       let barcodeValue = inputOption === 'Manual' ? codeInput : event.target.value;
-      // setCodeInput(event.target.value)
       let elementArr: any = [];
 
       //check if array contains object
@@ -41,7 +32,6 @@ const Home = () => {
   };
 
   const onInputOptionChange = (event: any) => {
-    console.log("input option: ", event.target.value);
     setInputOption(event.target.value);
   };
 
@@ -71,17 +61,11 @@ const Home = () => {
             >
               Opening Promo?
             </label>
-            {/* <p id="helper-checkbox-text" className="text-xs font-normal text-gray-500 dark:text-gray-300">On opening promotion</p> */}
           </div>
         </div>
       </div>
       <div className="row">
         {/* Input Field for the barcode or manual input */}
-        {/* <div id="qr-reader" className="input-field border-slate-200 placeholder-slate-400 contrast-more:border-slate-400 contrast-more:placeholder-slate-500">
-              <span className="block text-sm font-medium text-slate-700">Barcode</span>
-              <input id="barcode_input" className="barcode" type="text" />
-              <button id="manual-barcode-input" type="button" className="">Enter</button>
-            </div> */}
         <fieldset>
           <input
             id="scanner"
@@ -112,7 +96,6 @@ const Home = () => {
             Manual
           </label>
         </fieldset>
-        {/* <form> */}
           <label
             className="block text-sm font-medium leading-6 text-gray-900"
             htmlFor="input-barcode"
@@ -146,7 +129,6 @@ const Home = () => {
               value={codeInput}
             />
           )}
-        {/* </form> */}
       </div>
 
       <div className="row">
