@@ -1,12 +1,7 @@
-import React, { useState } from "react";
 import { cartItems } from "../api/cartItems";
 
 const Items = (props: any) => {
   const { checkoutItems, isOnPromo } = props;
-  const [subtotalArr, setSubtotalArr] = useState(0);
-  const [subtotal, setSubtotal] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [vgaBundleFlag, setVgaBundleFlag] = useState(false);
 
   const getItemCount = (checkoutItems: any[], _column: string) => {
     let itemsCount: any = [];
@@ -42,11 +37,8 @@ const Items = (props: any) => {
       } else if (_sku === "vga") {
         let mackbookItemExists = checkIfItemExists("mbp", checkoutItems);
       
-        let itemCountArr = getItemCount(checkoutItems, "sku");
-       
-        if (mackbookItemExists && !vgaBundleFlag) {
-          let itemCountArr = getItemCount(checkoutItems, "sku");
-      
+        if (mackbookItemExists) {
+
           subtotal = 0;
         } else {
           subtotal = _price * _count;
@@ -63,21 +55,6 @@ const Items = (props: any) => {
     return subtotal;
   };
 
-  const promoBundle = (_sku: string, _count: number) => {
-    let message = "";
-
-    if (_sku === "mbp") {
-      //Promo 3, add a free bundle on MacBook Pro
-      let bundle = cartItems.filter((item) => {
-        if (item.sku === "vga") {
-          return item;
-        } else {
-          return null;
-        }
-      });
-    }
-    return message;
-  };
 
   const handleCheckoutTotal = (itemArr: any, itemCountArr: any) => {
     let total = 0;
@@ -118,6 +95,8 @@ const Items = (props: any) => {
     const item = cartItems.filter((i) => {
       if (i.sku === _sku) {
         return i;
+      } else {
+        return false;
       }
     });
  
@@ -230,9 +209,7 @@ const Items = (props: any) => {
                         </p> */}
                       </>
                     )}
-                    <p className="text-gray-400">
-                      {promoBundle(item.sku, itemCountArr[item.barcode])}
-                    </p>
+            
                   </td>
                 </tr>
               ))
