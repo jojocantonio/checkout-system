@@ -2,51 +2,62 @@ import React, { useState } from "react";
 import { cartItems } from "../api/cartItems";
 
 const Items = (props: any) => {
-  const { checkoutItems } = props;
+  const { checkoutItems, isOnPromo } = props;
   const [subtotalArr, setSubtotalArr] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [vgaBundleFlag, setVgaBundleFlag] = useState(false);
 
-  const getItemCount = (checkoutItems: any[]) => {
+  const getItemCount = (checkoutItems: any[], _column: string) => {
+   
     let itemsCount: any = [];
 
     if (checkoutItems.length > 0) {
       checkoutItems.map((element) => {
-        itemsCount[element.barcode] = (itemsCount[element.barcode] || 0) + 1;
+        itemsCount[element[_column]] = (itemsCount[element[_column]] || 0) + 1;
       });
     }
+
     return itemsCount;
   };
 
-  const handleItemSubtotalOnSale = (
-    _sku: any,
-    _price: number,
-    _count: number
-  ) => {
+  const handleItemSubtotal = (_sku: any, _barcode: string, _price: number, _count: number) => {
     let subtotal = 0;
 
-    //Promo 1 on Apple TVs
-    if (_sku === "atv" && _count === 3) {
-      subtotal = _price * (_count - 1);
-    } else if (_sku === "ipd" && _count > 4) {
-      //Promo 2 on Super iPad
-      let itemPromoPrice = 499.99;
-      subtotal = itemPromoPrice * _count;
-    } else if (_sku === "mbp") {
-      //Promo 3, add a free bundle on MacBook Pro
-      subtotal = _price * _count;
-    } else if (_sku === "vga") {
-      let mackbookItemExists = checkIfItemExists("mbp", checkoutItems);
-      if(mackbookItemExists) {
-        subtotal = 0;
+    if (isOnPromo) {
+      //Promo 1 on Apple TVs
+      if (_sku === "atv" && _count === 3) {
+        subtotal = _price * (_count - 1);
+      } else if (_sku === "ipd" && _count > 4) {
+        //Promo 2 on Super iPad
+        let itemPromoPrice = 499.99;
+        subtotal = itemPromoPrice * _count;
+      } else if (_sku === "mbp") {
+        //Promo 3, add a free bundle on MacBook Pro
+        subtotal = _price * _count;
+      } else if (_sku === "vga") {
+        let mackbookItemExists = checkIfItemExists("mbp", checkoutItems);
+        console.log('mac exists? ', mackbookItemExists)
+        let itemCountArr = getItemCount(checkoutItems, "sku");
+        console.log('See: ', itemCountArr)
+        if (mackbookItemExists) {
+          let itemCountArr = getItemCount(checkoutItems, "sku");
+          console.log('See: ', itemCountArr)
+          if (itemCountArr[_barcode] >= 1) {
+            subtotal = _price * _count;
+          } else {
+            subtotal = 0;
+          }
+        } else {
+          subtotal = _price * _count;
+        }
       } else {
-        subtotal = _price * _count;
+        if (_count) {
+          subtotal = _price * _count;
+        }
       }
-     
     } else {
-      if (_count) {
-        subtotal = _price * _count;
-      }
+      subtotal = _price * _count;
     }
 
     return subtotal;
@@ -68,56 +79,48 @@ const Items = (props: any) => {
     }
     return message;
   };
+  
 
-  const handleItemSubtotal = (_price: number, _count: number) => {
-    let subtotal = 0;
 
-    subtotal = _price * _count;
-
-    return subtotal;
-  };
-
-  const handleCheckoutTotal = (itemArr: any) => {
+  const handleCheckoutTotal = (itemArr: any, itemCountArr: any) => {
     let total = 0;
 
-    itemArr.map((item: any) => {
-      let count = itemCountArr[item.barcode];
-      total += item.price * count;
-    });
-
-    return total.toFixed(2);
-  };
-
-  const handlePromoCheckoutTotal = (itemArr: any, itemCountArr: any) => {
-    let total = 0;
-
-    itemArr.map((item: any) => {
-      let count = itemCountArr[item.barcode];
-      //Promo 1 on Apple TVs
-      if (item.sku === "atv" && count=== 3) {
-        total += item.price * (count - 1);
-      } else if (item.sku === "ipd" && count > 4) {
-        //Promo 2 on Super iPad
-        let itemPromoPrice = 499.99;
-        total += itemPromoPrice * count;
-      } else if (item.sku === "mbp") {
-        //Promo 3, add a free bundle on MacBook Pro
-        total += item.price * count;
-      } 
-      // else if (item.sku === "vga") {
-      //   let mackbookItemExists = checkIfItemExists("mbp", checkoutItems);
-      //   if(mackbookItemExists) {
-      //     //will not compute
-      //   } else {
-      //     total += item.price*count;
-      //   }
-      // }
-       else {
-        if (count) {
+    if (isOnPromo) {
+      itemArr.map((item: any) => {
+        let count = itemCountArr[item.barcode];
+        //Promo 1 on Apple TVs
+        if (item.sku === "atv" && count === 3) {
+          total += item.price * (count - 1);
+        } else if (item.sku === "ipd" && count > 4) {
+          //Promo 2 on Super iPad
+          let itemPromoPrice = 499.99;
+          total += itemPromoPrice * count;
+        } else if (item.sku === "mbp") {
+          //Promo 3, add a free bundle on MacBook Pro
           total += item.price * count;
         }
-      }
-    });
+        // else if (item.sku === "vga") {
+        //   let mackbookItemExists = checkIfItemExists("mbp", checkoutItems);
+        //   if(mackbookItemExists) {
+        //     //will not compute
+        //   } else {
+        //     total += item.price*count;
+        //   }
+        // }
+        else {
+          if (count) {
+            total += item.price * count;
+          }
+        }
+      });
+    } else {
+      itemArr.map((item: any) => {
+        let count = itemCountArr[item.barcode];
+        if (count > 0) {
+          total += item.price * count;
+        }
+      });
+    }
 
     return total.toFixed(2);
   };
@@ -145,24 +148,31 @@ const Items = (props: any) => {
     return item.length > 0 ? true : false;
   };
 
-  let itemCountArr = getItemCount(checkoutItems);
+  let itemCountArr = getItemCount(checkoutItems, "barcode");
 
   const filteredArr = checkoutItems.reduce((acc: any[], current: any) => {
     const x = acc.find((item) => item.sku === current.sku);
+    const mbpExists = acc.find((item) => item.sku === "mbp");
 
+    //check if mbp and vga(1 hit) already exists
     if (!x) {
+      //No duplicates
       let filteredItem = acc.concat([current]);
       console.log("currr: ", current);
-      if (current.sku === "mbp") {
+      if (current.sku === "mbp" && isOnPromo) {
         let itemBundleSku = "vga";
         let freeBundledItem = getCartItem(itemBundleSku);
 
         filteredItem = filteredItem.concat([freeBundledItem]);
-        console.log("Checkpoint: ", filteredItem);
       }
       return filteredItem;
     } else {
-      return acc;
+      //if there's a duplicate
+      if (mbpExists && current.sku === "vga") {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
     }
   }, []);
 
@@ -187,7 +197,6 @@ const Items = (props: any) => {
               Subtotal
             </th>
           </tr>
-         
         </thead>
         <tbody>
           {filteredArr.length > 0
@@ -205,14 +214,17 @@ const Items = (props: any) => {
                     {itemCountArr[item.barcode]}
                   </td>
                   <td className="px-6 py-4 text-gray-900">
-                    ${itemCountArr[item.barcode] > 0 ? (
-                      handleItemSubtotalOnSale(
+                    $
+                    {itemCountArr[item.barcode] > 0 ? (
+                      handleItemSubtotal(
                         item.sku,
+                        item.barcode,
                         item.price,
                         itemCountArr[item.barcode]
                       ) > 0 ? (
-                        handleItemSubtotalOnSale(
+                        handleItemSubtotal(
                           item.sku,
+                          item.barcode,
                           item.price,
                           itemCountArr[item.barcode]
                         )
@@ -235,6 +247,8 @@ const Items = (props: any) => {
                           ${item.price}
                         </p>
                       </>
+                      // item.barcode
+                      // "Not sure"
                     )}
                     <p className="text-gray-400">
                       {promoBundle(item.sku, itemCountArr[item.barcode])}
@@ -243,14 +257,17 @@ const Items = (props: any) => {
                 </tr>
               ))
             : "No items to display"}
-            <tr className="text-md bold text-gray-900">
-              <td
-                colSpan={4} 
-                className="whitespace-nowrap px-6 py-4 font-medium font-black text-gray-700 dark:text-white">
-                Total
-              </td>
-              <td className="font-semibold whitespace-nowrap px-6 py-4 ">${handlePromoCheckoutTotal(filteredArr, itemCountArr)}</td>
-            </tr>
+          <tr className="text-md bold text-gray-900">
+            <td
+              colSpan={4}
+              className="whitespace-nowrap px-6 py-4 font-medium font-black text-gray-700 dark:text-white"
+            >
+              Total
+            </td>
+            <td className="font-semibold whitespace-nowrap px-6 py-4 ">
+              ${handleCheckoutTotal(filteredArr, itemCountArr)}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import Items from "./Items";
 import { cartItems } from "../api/cartItems";
@@ -6,9 +5,10 @@ import { cartItems } from "../api/cartItems";
 const Home = () => {
   const [checkoutItemsArr, setcheckoutItemsArr] = useState<string[]>([]);
   const [itemsCountArr, setItemsCountArr] = useState([]);
-  const [onPromo, setOnPromo] = useState(true);
+  const [isOnPromo, setIsOnPromo] = useState(true);
   const [codeInput, setCodeInput] = useState("");
-  const [inputOption, setInputOption] = useState("manual");
+  const [inputOption, setInputOption] = useState("Manual");
+ 
 
   useEffect(() => {
     console.log("checkoutItemsArr: ", checkoutItemsArr);
@@ -16,10 +16,11 @@ const Home = () => {
 
   const handleBarcodeScanned = (event: any) => {
     event.preventDefault();
+
     console.log("barcode input: ", event.target.value);
 
     if (event !== null) {
-      let barcodeValue = event.target.value;
+      let barcodeValue = inputOption === 'Manual' ? codeInput : event.target.value;
       // setCodeInput(event.target.value)
       let elementArr: any = [];
 
@@ -44,6 +45,10 @@ const Home = () => {
     setInputOption(event.target.value);
   };
 
+  const handleIsOnPromo = (event:any) => {
+    setIsOnPromo(current => !current);
+  }
+
   return (
     <div className="md:container md:mx-auto mt-12 border-2 rounded p-10">
       <div className="row">
@@ -51,10 +56,11 @@ const Home = () => {
           <div className="flex items-center h-5">
             <input
               id="promo-checkbox"
-              checked
-              aria-describedby="helper-checkbox-text"
+              name="promo-checkbox"
+              checked={isOnPromo}
+              onChange={handleIsOnPromo}
               type="checkbox"
-              value=""
+              aria-describedby="helper-checkbox-text"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
@@ -106,43 +112,46 @@ const Home = () => {
             Manual
           </label>
         </fieldset>
-        <form>
+        {/* <form> */}
           <label
             className="block text-sm font-medium leading-6 text-gray-900"
             htmlFor="input-barcode"
           >
             Barcode
           </label>
-          <form onSubmit={handleBarcodeScanned}>
+          {inputOption === "Manual" ? (
+            <form onSubmit={handleBarcodeScanned}>
+              <input
+                name="input-barcode"
+                id="input-barcode"
+                className="rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                value={codeInput}
+                onChange={(event) => setCodeInput(event.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              >
+                Enter
+              </button>
+            </form>
+          ) : (
             <input
               name="input-barcode"
               id="input-barcode"
               className="rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              type="text"
+              onChange={handleBarcodeScanned}
               value={codeInput}
-              onChange={(event) => setCodeInput(event.target.value)}
-              required
             />
-            <button
-              type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              Submit
-            </button>
-          </form>
-          <input
-            name="input-barcode"
-            id="input-barcode"
-            className="rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            type="text"
-            onChange={handleBarcodeScanned}
-            value={codeInput}
-          />
-        </form>
+          )}
+        {/* </form> */}
       </div>
 
       <div className="row">
         {checkoutItemsArr.length > 0 ? (
-          <Items checkoutItems={checkoutItemsArr} />
+          <Items checkoutItems={checkoutItemsArr} isOnPromo={isOnPromo}/>
         ) : (
           <p> No items scanned. </p>
         )}
