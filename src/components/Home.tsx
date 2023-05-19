@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import Items from "./Items";
 import { cartItems } from "../api/cartItems";
@@ -40,7 +41,7 @@ const Home = () => {
   }
 
   return (
-    <div className="md:container md:mx-auto mt-12 border-2 rounded p-10">
+    <div data-testid="home" className="md:container md:mx-auto mt-12 border-2 rounded p-10">
       <div className="row">
         <div className="flex justify-end">
           <div className="flex items-center h-5">

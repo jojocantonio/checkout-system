@@ -1,9 +1,10 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import Home from "./components/Home";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe("<Home />", () => {
+  it("should render view", () => {
+    render(<Home />);
+    expect(screen.getByTestId("home")).toMatchSnapshot();
+    expect(screen.getByTestId('home')).toHaveTextContent('Scanner');
+  });
 });

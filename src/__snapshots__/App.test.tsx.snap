@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Home /> should render view 1`] = `
+<div
+  class="md:container md:mx-auto mt-12 border-2 rounded p-10"
+  data-testid="home"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="flex justify-end"
+    >
+      <div
+        class="flex items-center h-5"
+      >
+        <input
+          aria-describedby="helper-checkbox-text"
+          checked=""
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          id="promo-checkbox"
+          name="promo-checkbox"
+          type="checkbox"
+        />
+      </div>
+      <div
+        class="ml-1 text-sm"
+      >
+        <label
+          class="font-medium text-gray-900 dark:text-gray-300"
+          for="promo-checkbox"
+        >
+          Opening Promo?
+        </label>
+      </div>
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <fieldset>
+      <input
+        class="peer/scanner"
+        id="scanner"
+        name="status"
+        type="radio"
+        value="Scanner"
+      />
+      <label
+        class="peer-checked/scanner:text-sky-500"
+        for="scanner"
+      >
+        Scanner
+      </label>
+      <input
+        checked=""
+        class="peer/manual ml-4"
+        id="manual"
+        name="status"
+        type="radio"
+        value="Manual"
+      />
+      <label
+        class="peer-checked/manual:text-sky-500"
+        for="manual"
+      >
+        Manual
+      </label>
+    </fieldset>
+    <label
+      class="block text-sm font-medium leading-6 text-gray-900"
+      for="input-barcode"
+    >
+      Barcode
+    </label>
+    <form>
+      <input
+        class="rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        id="input-barcode"
+        name="input-barcode"
+        required=""
+        value=""
+      />
+      <button
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        type="submit"
+      >
+        Enter
+      </button>
+    </form>
+  </div>
+  <div
+    class="row"
+  >
+    <p>
+       No items scanned. 
+    </p>
+  </div>
+</div>
+`;
